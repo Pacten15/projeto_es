@@ -1,0 +1,132 @@
+ Instalação Software
+Para a realização do projecto é necessário instalar:
+
+    JDK >= 11
+    Maven
+    PostgreSQL >= 10
+    Node.js 16 (tem que ser esta versão!)
+
+
+Comandos para instalação em Ubuntu:
+
+sudo apt install openjdk-11-jdk postgresql postgresql-client maven wget
+
+# Node.js:
+sudo apt install --no-install-recommends libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+wget -O - https://deb.nodesource.com/setup_16.x | sudo bash - && sudo apt install -y nodejs
+
+# Config da BD
+sudo /etc/init.d/postgresql start
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+sudo -u postgres psql -c "CREATE DATABASE tutordb;"
+
+
+Em Mac podem usar o Homebrew:
+
+brew install postgresql maven node@16
+brew link node@16
+
+# Config da BD
+brew services start postgresql
+psql -c "CREATE USER postgres PASSWORD 'postgres';"
+psql -c "CREATE DATABASE tutordb;"
+
+
+Em Windows, é necessário WSL 2 c/ suporte GUI (Windows 11 actualizado) para correr os testes do frontend. O resto funciona com WSL 1.
+Em alternativa a instalar o software acima, podem usar a imagem de Docker que é usada pelo CI: registry.rnl.tecnico.ulisboa.pt/es/quizzes-tutor.
+Aconselha-se ainda a instalação de um IDE, tal com o IntelliJ, Eclipse, VSCode, ou outro. (Nota: O IDE IntelliJ é particularmente bom para desenvolvimento Java e podem obter uma licença educacional para a versão Ultimate. Mais detalhes em https://www.jetbrains.com/community/education/#students).
+
+Repositório código
+O projecto será desenvolvido no GitLab da RNL. Para se registarem, basta fazer login via fénix: https://gitlab.rnl.tecnico.ulisboa.pt
+O código do vosso grupo está disponível em https://gitlab.rnl.tecnico.ulisboa.pt/es/es23-XX (onde XX é o número do grupo). Se ainda não tinham criado conta no GitLab, pode demorar alguns dias até terem permissões de acesso ao vosso projecto.
+
+NB: devem configurar o cliente de git com o vosso nome e email. Se usarem o git na consola, devem correr estes comandos:
+
+git config --global user.name "Nome Apelido"
+git config --global user.email "o.vosso.email@tecnico.ulisboa.pt"
+
+O --global altera a configuração para todos os repositórios. Alternativamente, podem correr o comando só no directório do projecto sem --global.
+
+Correr testes
+Devem verificar que a vossa instalação está funcional, correndo os testes:
+
+# estas configurações podem ser colocadas no .bashrc, por exemplo
+export POSTGRES_DB=tutordb
+export POSTGRES_USER=postgres
+export POSTGRES_PASSWORD=postgres
+export POSTGRES_HOST_AUTH_METHOD=trust
+export PSQL_INT_TEST_DB_USERNAME=postgres
+export PSQL_INT_TEST_DB_PASSWORD=postgres
+export cypress_psql_db_name=tutordb
+export cypress_psql_db_username=postgres
+export cypress_psql_db_password=postgres
+export cypress_psql_db_host=localhost
+export cypress_psql_db_port=5432
+
+
+
+
+/*************************************************\
+
+# Testes de unidade
+cd backend
+mvn clean -Ptest test
+
+# Testes de integração
+mvn clean verify -Ptest-int
+
+# Limpa BD
+sudo -u postgres psql -d tutordb -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+# Testes frontend
+cd ../frontend
+npm install
+npm run test:unit
+
+# Testes end-to-end
+cd ../backend
+mvn clean -Ptest-int spring-boot:run &
+cd ../frontend
+npm start &
+# Espera que o servidor arranque
+wget --tries=0 --timeout=1 --retry-connrefused -q http://localhost:8081
+npx cypress run
+
+Using the Docker container for development
+To use the available Docker container for development, see the attached tutorial.
+
+Attachments
+
+    Using the Docker container for development.pdf
+
+
+To use cypress interface use:
+
+npm run cypress
+
+if you only want to run the tests on the terminal is:
+
+npx cypress run
+
+
+install chart.js
+
+npm i vue-chartjs@4.1.2 chart.js
+
+
+Base de dados Comandos
+
+sudo -u postgres psql -d tutordb
+
+\dt
+
+select * from <TABLE>
+
+testar teste do backend único
+
+mvn test -Ptest -Dtest=<Nome Test>
+
+testar frontend
+
+npx cypress run --record --spec "cypress/e2e/my-spec.cy.js"
+

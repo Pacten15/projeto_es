@@ -1,0 +1,79 @@
+template>
+  <Bar :chart-data="chartData" />
+</template>
+
+<script>
+// DataPage.vue
+import { Bar } from 'vue-chartjs/legacy'
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import TeacherDashboardStats from '@/models/dashboard/TeacherDashboardStats';
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+
+export default {
+  name: 'BarChart',
+  components: { Bar },
+  props: {
+    stats: {
+      type: TeacherDashboardStats,
+      required: true
+    }
+  },
+  data() {
+    return {
+      chartData: {
+        labels: this.getLabels(),
+        datasets: this.getDatasets(),
+      }
+    }
+  },
+  methods: {
+    getLabels: function() {
+      let labels = [];
+      for (let i=0; i < this.stats.length && i < 3; i++) {
+        labels.push(this.stats[i].courseExecutionYear);
+      }
+      return labels;
+    },
+    getData: function(statId) {
+      let data = [];
+      switch (statId) {
+        case 0:
+          for (let i=0; i < this.stats.length && i < 3; i++) {
+            data.push(this.stats[i].stat1);
+          }
+          break;
+        case 1:
+          for (let i=0; i < this.stats.length && i < 3; i++) {
+            data.push(this.stats[i].stat2);
+          }
+          break;
+        case 2:
+          for (let i=0; i < this.stats.length && i < 3; i++) {
+            data.push(this.stats[i].stat3);
+          }
+          break;
+        default: break;
+      }
+      return data;
+    },
+    getDatasets: function() {
+      let datasets = [];
+      for (let i=0; i < 3; i++) {
+        let statLabel;
+        switch (i) {
+          case 0: statLabel = this.stats[0].stats1ChartDatasetLabel; break;
+          case 1: statLabel = this.stats[0].stats2ChartDatasetLabel; break;
+          case 2: statLabel = this.stats[0].stats3ChartDatasetLabel; break;
+          default: break;
+        }
+        datasets.push({
+          label: statLabel,
+          data: this.getData(i)
+        })
+      }
+      return datasets;
+    },
+  }
+}
+</script>
